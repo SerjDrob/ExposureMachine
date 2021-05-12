@@ -1,0 +1,32 @@
+﻿<Window x:Class="ExposureMachine.View.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExposureMachine.View"
+        mc:Ignorable="d"
+        Title="Настройки" Height="auto" Width="auto" SizeToContent="WidthAndHeight">
+    <Grid>
+        <UniformGrid Columns="2">
+            <Label Content="Управление клапанами"/>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <ComboBox Width="100" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}"/>
+                <Rectangle Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="10,0,0,0">
+                    <Rectangle.Style>
+                        <Style TargetType="Rectangle">
+                            <Setter Property="Fill" Value="Red"/>
+                            <Style.Triggers>                                
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <Binding Path="MyPortIsConnected"/>
+                                    </DataTrigger.Binding>
+                                    <Setter Property="Fill" Value="LawnGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Rectangle.Style>
+                </Rectangle>
+            </StackPanel>
+        </UniformGrid>
+    </Grid>
+</Window>

@@ -15,16 +15,20 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Background="Black" BorderThickness="3">
-            <Image />
+        <ToolBar Grid.ColumnSpan="2">
+            <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
+        </ToolBar>
+        <Border Grid.Row="1" Background="Black" BorderThickness="3">
+            <Image Source="{Binding LeftImage}" Grid.Row="1" />
         </Border>
-        <Border Background="Black" BorderThickness="3" Grid.Column="1">
-            <Image Grid.Column="1"/>
+        <Border Background="Black" BorderThickness="3" Grid.Column="1" Grid.Row="1">
+            <Image Source="{Binding RightImage}" Grid.Row="1" Grid.Column="1"/>
         </Border>
-        <UniformGrid Grid.Row="1" Grid.ColumnSpan="2" Rows="2" Columns="5">
+        <UniformGrid Grid.Row="2" Grid.ColumnSpan="2" Rows="2" Columns="5">
             <UniformGrid.Resources>
                 <Style TargetType="Button">
                     <Setter Property="Margin" Value="2"/>

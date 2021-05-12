@@ -8,6 +8,8 @@ using Exposure_Machine.Model;
 using System.Diagnostics;
 using System.ComponentModel;
 using ExposureMachine.Classes;
+using ExposureMachine.View;
+using System.Windows.Media.Imaging;
 namespace ExposureMachine.ViewModel
 {
     public enum Buttons
@@ -29,13 +31,41 @@ namespace ExposureMachine.ViewModel
     class MainViewModel
     {
         public ICommand PushCmd { get; set; }
+        public ICommand SettingsCmd { get; set; }
+        private IVideoCapture LeftCamera;
+        private IVideoCapture RightCamera;
+        public BitmapImage LeftImage { get; set; }
+        public BitmapImage RightImage { get; set; }
         internal MainViewModel()
         {
             PushCmd = new Command(args => PushTheButton(args));
             ((Command)PushCmd).CanExecuteDelegate = StopExec;
+            SettingsCmd = new Command(args => Settings());
             _comPort = new ValveSet("COM9");
+            LeftCamera = new ToupCamera();
+            RightCamera = new ToupCamera();
+            LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+            RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
         }
+
+        private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
+        {
+            if (e.DeviceNum == LeftCamera.DeviceIndex)
+            {
+                LeftImage = e.BI;
+            }
+            if (e.DeviceNum == RightCamera.DeviceIndex)
+            {
+                RightImage = e.BI;
+            }
+        }
+
         private ICOM _comPort;
+        private void Settings()
+        {
+            new SettingsView() { DataContext = new SettingsViewModel(_comPort) }.Show();
+        }
+
         private void PushTheButton(object parameter)
         {
             switch (parameter)
