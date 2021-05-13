@@ -10,7 +10,7 @@ namespace ExposureMachine.Classes
     interface IVideoCapture
     {   
         public void StartCamera(int index);
-        public int DeviceIndex { get; init; }
+        public int DeviceIndex { get; }
         public void FreezeCameraImage();
         public void StopCamera();
         public int GetDevicesCount();

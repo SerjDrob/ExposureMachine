@@ -22,11 +22,11 @@
         <ToolBar Grid.ColumnSpan="2">
             <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
         </ToolBar>
-        <Border Grid.Row="1" Background="Black" BorderThickness="3">
-            <Image Source="{Binding LeftImage}" Grid.Row="1" />
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="3">
+            <Image Source="{Binding LeftImage, Mode=OneWay}" Grid.Row="1" />
         </Border>
-        <Border Background="Black" BorderThickness="3" Grid.Column="1" Grid.Row="1">
-            <Image Source="{Binding RightImage}" Grid.Row="1" Grid.Column="1"/>
+        <Border BorderThickness="3" BorderBrush="Gray" Grid.Column="1" Grid.Row="1">
+            <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
         </Border>
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="2" Rows="2" Columns="5">
             <UniformGrid.Resources>

@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using System.IO;
 
+
 namespace ExposureMachine.Classes
 {
     class ToupCamera : IVideoCapture
@@ -32,7 +33,7 @@ namespace ExposureMachine.Classes
         }
 
         private static readonly string[] devices;
-        public int DeviceIndex { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public int DeviceIndex { get; private set; } = 1000;
 
         public event EventHandler<VideoCaptureEventArgs> OnBitmapChanged;
 
@@ -40,7 +41,51 @@ namespace ExposureMachine.Classes
         {
             throw new NotImplementedException();
         }
-
+        private void DelegateEventCallback(Toupcam.eEVENT eEVENT)
+        {
+            switch (eEVENT)
+            {
+                case Toupcam.eEVENT.EVENT_EXPOSURE:
+                    break;
+                case Toupcam.eEVENT.EVENT_TEMPTINT:
+                    break;
+                case Toupcam.eEVENT.EVENT_CHROME:
+                    break;
+                case Toupcam.eEVENT.EVENT_IMAGE:
+                    OnEventImage();
+                    break;
+                case Toupcam.eEVENT.EVENT_STILLIMAGE:
+                    break;
+                case Toupcam.eEVENT.EVENT_WBGAIN:
+                    break;
+                case Toupcam.eEVENT.EVENT_TRIGGERFAIL:
+                    break;
+                case Toupcam.eEVENT.EVENT_BLACK:
+                    break;
+                case Toupcam.eEVENT.EVENT_FFC:
+                    break;
+                case Toupcam.eEVENT.EVENT_DFC:
+                    break;
+                case Toupcam.eEVENT.EVENT_ROI:
+                    break;
+                case Toupcam.eEVENT.EVENT_ERROR:
+                    break;
+                case Toupcam.eEVENT.EVENT_DISCONNECTED:
+                    break;
+                case Toupcam.eEVENT.EVENT_NOFRAMETIMEOUT:
+                    break;
+                case Toupcam.eEVENT.EVENT_AFFEEDBACK:
+                    break;
+                case Toupcam.eEVENT.EVENT_AFPOSITION:
+                    break;
+                case Toupcam.eEVENT.EVENT_NOPACKETTIMEOUT:
+                    break;
+                case Toupcam.eEVENT.EVENT_FACTORY:
+                    break;
+                default:
+                    break;
+            }
+        }
         public int GetDevicesCount()
         {
             throw new NotImplementedException();
@@ -52,17 +97,41 @@ namespace ExposureMachine.Classes
             {
                 throw new MyCameraException($"Камера с индексом {index} не подключена");
             }
-            if (cam_ != null)
+            if (cam_ is null)
             {
+
                 cam_ = Toupcam.Open(devices[index]);
-                CapturingTask = new Task(() =>
+                cam_.put_Chrome(true);
+                int width = 0, height = 0;
+                if (cam_.get_Size(out width, out height))
                 {
-                    while (true)
+                    DeviceIndex = index;
+                    bmp_ = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+                    
+                    var pointer = new IntPtr();
+                    
+                    if (!cam_.StartPullModeWithCallback(DelegateEventCallback))
                     {
-                        OnEventImage();
+                        throw new MyCameraException("failed to start device");
                     }
-                });
-                CapturingTask.ConfigureAwait(false);
+                    else
+                    {
+                        bool autoexpo = true;
+                        cam_.get_AutoExpoEnable(out autoexpo);
+                    }
+                }
+
+
+              //  CapturingTask = new Task(() =>
+              //  {
+              //      while (true)
+              //      {
+              //          OnEventImage();
+              //      }
+              //  });
+              //  CapturingTask.ConfigureAwait(false);
+              //  CapturingTask.Start();
+              //// CapturingTask.RunSynchronously();
             }
         }
         private Task CapturingTask; 
@@ -112,17 +181,15 @@ namespace ExposureMachine.Classes
 
         private void OnEventImage()
         {
-            if (bmp_ != null)
+            if (bmp_ is not null)
             {
-                BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                Toupcam.FrameInfoV2 info = new Toupcam.FrameInfoV2();
+                var bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                var info = new Toupcam.FrameInfoV2();
                 cam_.PullImageV2(bmpdata.Scan0, 24, out info);
                 bmp_.UnlockBits(bmpdata);
                 try
                 {
-                    using var img = bmp_;
-
-
+                    var img = bmp_;
                     var ms = new MemoryStream();
                     img.Save(ms, ImageFormat.Bmp);
 

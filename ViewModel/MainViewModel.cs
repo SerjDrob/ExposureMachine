@@ -10,6 +10,8 @@ using System.ComponentModel;
 using ExposureMachine.Classes;
 using ExposureMachine.View;
 using System.Windows.Media.Imaging;
+using PropertyChanged; 
+
 namespace ExposureMachine.ViewModel
 {
     public enum Buttons
@@ -27,7 +29,7 @@ namespace ExposureMachine.ViewModel
         [Description("Подъём столика")]
         LiftingTable
     }
-       
+    [AddINotifyPropertyChangedInterface] 
     class MainViewModel
     {
         public ICommand PushCmd { get; set; }
@@ -44,6 +46,8 @@ namespace ExposureMachine.ViewModel
             _comPort = new ValveSet("COM9");
             LeftCamera = new ToupCamera();
             RightCamera = new ToupCamera();
+            LeftCamera.StartCamera(0);
+            RightCamera.StartCamera(1);
             LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
             RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
         }
@@ -52,7 +56,7 @@ namespace ExposureMachine.ViewModel
         {
             if (e.DeviceNum == LeftCamera.DeviceIndex)
             {
-                LeftImage = e.BI;
+               LeftImage = e.BI;
             }
             if (e.DeviceNum == RightCamera.DeviceIndex)
             {
