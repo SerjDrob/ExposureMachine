@@ -19,16 +19,23 @@ namespace ExposureMachine.Classes
     {
         static ToupCamera()
         {
-            var arr = Toupcam.EnumV2();
+            try
+            {
+                var arr = Toupcam.EnumV2();
 
-            if (arr.Length <= 0)
-            {
-                throw new MyCameraException("no device");
+                if (arr.Length <= 0)
+                {
+                    throw new MyCameraException("no device");
+                }
+                else
+                {
+                    devices = new string[arr.Length];
+                    devices = arr.Select(a => a.id).ToArray();
+                }
             }
-            else
+            catch (Exception e)
             {
-                devices = new string[arr.Length];
-                devices = arr.Select(a => a.id).ToArray();
+                throw new MyCameraException(e.Message);
             }
         }
 

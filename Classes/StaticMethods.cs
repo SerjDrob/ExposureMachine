@@ -5,8 +5,7 @@ namespace ExposureMachine.Classes
 {
     public static class StaticMethods
     {
-        public static string GetDescription<T>(this T enumValue)
-            where T : struct, IConvertible
+        public static string GetDescription<T>(this T enumValue) where T : struct, IConvertible            
         {
             if (!typeof(T).IsEnum)
                 return null;
@@ -24,6 +23,15 @@ namespace ExposureMachine.Classes
             }
 
             return description;
+        }
+        public static string ByteToString(this byte theByte)
+        {
+            String str = "";
+            for (int i = 0; i < 8; i++)
+            {
+                str = ((((1 << i) & theByte) > 0) ? "1" : "0") + str;
+            }
+            return str;
         }
     }
 }

@@ -30,21 +30,21 @@
         </Border>
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="2" Rows="2" Columns="5">
             <UniformGrid.Resources>
-                <Style TargetType="Button">
+                <Style TargetType="ToggleButton">
                     <Setter Property="Margin" Value="2"/>
                 </Style>
             </UniformGrid.Resources>
-            <Button  Content="Юстировка ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" />
-            <Button Content="Фиксация ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}"/>
-            <Button Content="Фиксация рамки ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingFrame}"/>
-            <Button Content="Фиксация подложки" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}"/>
-            <Button Content="Столик шаровая опора" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.BallSupport}"/>
-            <Button Content="Подъём столика" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.LiftingTable}"/>
-            <Button>
+            <ToggleButton Content="Юстировка ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" />
+            <ToggleButton Content="Фиксация ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}"/>
+            <ToggleButton Content="Фиксация рамки ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingFrame}"/>
+            <ToggleButton Content="Фиксация подложки" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}"/>
+            <ToggleButton Content="Столик шаровая опора" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.BallSupport}"/>
+            <ToggleButton Content="Подъём столика" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.LiftingTable}"/>
+            <ToggleButton>
                 <TextBlock TextWrapping="Wrap" Text="Фиксация подъёма столика"/>
-            </Button>
-            <Button Content="Зазор"/>
-            <Button Content="Экспонирование"/>
+            </ToggleButton>
+            <ToggleButton Content="Зазор"/>
+            <ToggleButton Content="Экспонирование"/>
         </UniformGrid>
     </Grid>
 </Window>

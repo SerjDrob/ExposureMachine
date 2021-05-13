@@ -14,20 +14,21 @@ using PropertyChanged;
 
 namespace ExposureMachine.ViewModel
 {
+    [Flags]
     public enum Buttons
     {
         [Description("Юстировка ФШ")]
-        AlignmentMask,
+        AlignmentMask = 0b00000001,
         [Description("Фиксация ФШ")]
-        FixingMask,
+        FixingMask = 0b00000010,
         [Description("Фиксация рамки ФШ")]
-        FixingFrame,
+        FixingFrame = 0b00000100,
         [Description("Фиксация подложки")]
-        FixingSubstrate,
+        FixingSubstrate = 0b00001000,
         [Description("Столик шаровая опора")]
-        BallSupport,
+        BallSupport = 0b00010000,
         [Description("Подъём столика")]
-        LiftingTable
+        LiftingTable = 0b00100000
     }
     [AddINotifyPropertyChangedInterface] 
     class MainViewModel
@@ -36,6 +37,7 @@ namespace ExposureMachine.ViewModel
         public ICommand SettingsCmd { get; set; }
         private IVideoCapture LeftCamera;
         private IVideoCapture RightCamera;
+        private byte _valvesCondition = default;
         public BitmapImage LeftImage { get; set; }
         public BitmapImage RightImage { get; set; }
         internal MainViewModel()
@@ -43,13 +45,20 @@ namespace ExposureMachine.ViewModel
             PushCmd = new Command(args => PushTheButton(args));
             ((Command)PushCmd).CanExecuteDelegate = StopExec;
             SettingsCmd = new Command(args => Settings());
-            _comPort = new ValveSet("COM9");
-            LeftCamera = new ToupCamera();
-            RightCamera = new ToupCamera();
-            LeftCamera.StartCamera(0);
-            RightCamera.StartCamera(1);
-            LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
-            RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+            _comValves = new ValveSet("COM9");
+            try
+            {
+                LeftCamera = new ToupCamera();
+                RightCamera = new ToupCamera();
+                LeftCamera.StartCamera(0);
+                RightCamera.StartCamera(1);
+                LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+                RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+            }
+            catch (Exception e)
+            {
+                System.Windows.MessageBox.Show(e.Message);
+            }
         }
 
         private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
@@ -64,10 +73,10 @@ namespace ExposureMachine.ViewModel
             }
         }
 
-        private ICOM _comPort;
+        private ICOM _comValves;
         private void Settings()
         {
-            new SettingsView() { DataContext = new SettingsViewModel(_comPort) }.Show();
+            new SettingsView() { DataContext = new SettingsViewModel(_comValves) }.Show();
         }
 
         private void PushTheButton(object parameter)
@@ -77,11 +86,11 @@ namespace ExposureMachine.ViewModel
                 case Buttons button:
                     switch (button)
                     {
-                        case Buttons.AlignmentMask:
+                        case Buttons.AlignmentMask:                            
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
                         case Buttons.FixingMask:
-                            _comPort.WriteByte(0x1);
+                            _comValves.WriteByte(0x1);
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
                         case Buttons.FixingFrame:
@@ -98,8 +107,11 @@ namespace ExposureMachine.ViewModel
                             break;
                         default:
                             break;
-                    }
+                    } 
+                    _valvesCondition ^= (byte)button;
+                    _comValves.WriteLine(_valvesCondition.ByteToString());
                     break;
+                   
                 default:
                     break;
             }
@@ -112,7 +124,7 @@ namespace ExposureMachine.ViewModel
                     switch (button)
                     {
                         case Buttons.AlignmentMask:
-                            return false;
+                            //return false;
                             break;
                         case Buttons.FixingMask:
                             break;

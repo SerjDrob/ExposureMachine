@@ -12,6 +12,7 @@ namespace ExposureMachine.Classes
         public string ConnectedPort { get; }
         public bool EstablishConnection(string comPort);
         public void WriteByte(byte data);
+        public void WriteLine(string line);
         public event EventHandler<decimal> GetData;
     }
 
@@ -69,7 +70,12 @@ namespace ExposureMachine.Classes
 
         void ICOM.WriteByte(byte data)
         {   
-            _serialPort.Write(new byte[] { data }, 0, 1);            
+            _serialPort.Write(new byte[] { data }, 0, 1);               
+        }
+
+        public void WriteLine(string line)
+        {
+            _serialPort.WriteLine(line);
         }
 
         ~ValveSet()
