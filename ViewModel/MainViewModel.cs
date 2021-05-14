@@ -45,7 +45,7 @@ namespace ExposureMachine.ViewModel
             PushCmd = new Command(args => PushTheButton(args));
             ((Command)PushCmd).CanExecuteDelegate = StopExec;
             SettingsCmd = new Command(args => Settings());
-            _comValves = new ValveSet("COM9");
+            _comValves = new ValveSet("COM3");
             try
             {
                 LeftCamera = new ToupCamera();
@@ -89,8 +89,7 @@ namespace ExposureMachine.ViewModel
                         case Buttons.AlignmentMask:                            
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
-                        case Buttons.FixingMask:
-                            _comValves.WriteByte(0x1);
+                        case Buttons.FixingMask:                            
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
                         case Buttons.FixingFrame:
@@ -109,7 +108,8 @@ namespace ExposureMachine.ViewModel
                             break;
                     } 
                     _valvesCondition ^= (byte)button;
-                    _comValves.WriteLine(_valvesCondition.ByteToString());
+                    _comValves.WriteLine(_valvesCondition.ByteToString()+"\n");
+                    Trace.WriteLine(_valvesCondition.ByteToString());
                     break;
                    
                 default:
