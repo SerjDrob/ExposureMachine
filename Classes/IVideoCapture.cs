@@ -7,6 +7,12 @@ using System.Windows.Media.Imaging;
 
 namespace ExposureMachine.Classes
 {   
+    public struct CameraSettings
+    {
+        public bool monochrome;
+        public int brightness;
+        public int contrast;
+    }
     interface IVideoCapture
     {   
         public void StartCamera(int index);
@@ -14,7 +20,7 @@ namespace ExposureMachine.Classes
         public void FreezeCameraImage();
         public void StopCamera();
         public int GetDevicesCount();
-
+        public void SetSettings(CameraSettings settings);
         public event EventHandler<VideoCaptureEventArgs> OnBitmapChanged;
     }
     public class VideoCaptureEventArgs : EventArgs

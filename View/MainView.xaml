@@ -4,11 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExposureMachine.ViewModel"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="Установка совмещения" Height="450" Width="800"  WindowState="Maximized">
     <Window.InputBindings>
-        <KeyBinding Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" Key="F2"/>
+        <KeyBinding Command="{Binding PromptsCmd}" Key="P"/>        
     </Window.InputBindings>
+    <Window.Resources>
+        <Storyboard x:Key="CaptureSettingsAnimation">
+            <ObjectAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=LeftCameraSettings}" 
+                                           Storyboard.TargetProperty="(UIElement.Visibility)"
+                                           Duration="0:0:0"
+                                           >
+                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CaptureSettingsAnimationCollapse">
+            <ObjectAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=LeftCameraSettings}" 
+                                           Storyboard.TargetProperty="(UIElement.Visibility)"
+                                           Duration="0:0:0"
+                                           >
+                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <BitmapImage x:Key="DefaultImage" UriSource="/Icons/harold-thumb.jpg" />
+        
+    </Window.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -21,9 +43,74 @@
         </Grid.RowDefinitions>
         <ToolBar Grid.ColumnSpan="2">
             <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
+            <ToolBar.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Настройки изображения">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <i:ControlStoryboardAction Storyboard="{StaticResource ResourceKey=CaptureSettingsAnimation}"/>
+                            </i:EventTrigger>                           
+                        </i:Interaction.Triggers>
+                    </MenuItem>
+                </ContextMenu>
+            </ToolBar.ContextMenu>
         </ToolBar>
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="3">
-            <Image Source="{Binding LeftImage, Mode=OneWay}" Grid.Row="1" />
+            <Grid Grid.Row="1">
+                <Image Source="{Binding LeftImage, Mode=OneWay}">
+                    <Image.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Настройки изображения">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <i:ControlStoryboardAction Storyboard="{StaticResource ResourceKey=CaptureSettingsAnimation}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Image.ContextMenu>
+                </Image>
+                <Border BorderBrush="AliceBlue" BorderThickness="2" Background="DimGray" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                    <StackPanel  x:Name="LeftCameraSettings" Visibility="Collapsed">
+                        <DockPanel LastChildFill="False">
+                            <Button DockPanel.Dock="Right"                                     
+                                    Width="11"
+                                    Height="11"
+                                    Background="Red"                      
+                                    RenderTransformOrigin="0.5, 0.5"
+                                    >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <i:ControlStoryboardAction Storyboard="{StaticResource CaptureSettingsAnimationCollapse}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Button.Content>
+                                    <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" VerticalAlignment="Center"  HorizontalAlignment="Center" Stroke="White" StrokeThickness="2"/>
+                                </Button.Content>
+                            </Button>
+                        </DockPanel>
+                        <UniformGrid Margin="3" Columns="2"  Background="DimGray">
+                            <UniformGrid.Resources>
+                                <Style TargetType="Control">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </UniformGrid.Resources>
+                            <TextBlock Text="Монохром"/>
+                            <CheckBox IsChecked="{Binding LeftMonochrome}"/>
+                            <TextBlock Text="Яркость"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Value="{Binding LeftBrightness}" Name="BrightnessSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                                <Label Content="{Binding ElementName=BrightnessSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
+                            </StackPanel>
+                            <TextBlock Text="Контраст"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Value="{Binding LeftContrast}" Name="ContrastSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                                <Label Content="{Binding ElementName=ContrastSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Border>
         <Border BorderThickness="3" BorderBrush="Gray" Grid.Column="1" Grid.Row="1">
             <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
@@ -32,19 +119,64 @@
             <UniformGrid.Resources>
                 <Style TargetType="ToggleButton">
                     <Setter Property="Margin" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment"  Value="Stretch"/>
                 </Style>
             </UniformGrid.Resources>
-            <ToggleButton Content="Юстировка ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" />
-            <ToggleButton Content="Фиксация ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}"/>
-            <ToggleButton Content="Фиксация рамки ФШ" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingFrame}"/>
-            <ToggleButton Content="Фиксация подложки" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}"/>
-            <ToggleButton Content="Столик шаровая опора" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.BallSupport}"/>
-            <ToggleButton Content="Подъём столика" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.LiftingTable}"/>
-            <ToggleButton>
-                <TextBlock TextWrapping="Wrap" Text="Фиксация подъёма столика"/>
+            <ToggleButton HorizontalContentAlignment="Stretch" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" >
+                <Grid>
+                   <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Юстировка ФШ</TextBlock>
+                   <AccessText Text="_A" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>                
             </ToggleButton>
-            <ToggleButton Content="Зазор"/>
-            <ToggleButton Content="Экспонирование"/>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация ФШ</TextBlock>
+                    <AccessText Text="_S" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingFrame}">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация рамки ФШ</TextBlock>
+                    <AccessText Text="_D" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация подложки</TextBlock>
+                    <AccessText Text="_F" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.BallSupport}">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Столик шаровая опора</TextBlock>
+                    <AccessText Text="_Z" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.LiftingTable}">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Подъём столика</TextBlock>
+                    <AccessText Text="_X" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton>                
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация подъёма столика</TextBlock>
+                    <AccessText Text="_C" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton>
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Зазор</TextBlock>
+                    <AccessText Text="_V" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton>
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Экспонирование</TextBlock>
+                    <AccessText Text="_Q" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                </Grid>
+            </ToggleButton>
         </UniformGrid>
     </Grid>
 </Window>
