@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="ExposureMachine.View.VideoSettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ExposureMachine.View"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             >
+    <Grid x:Name="myLayout">
+        <Border BorderBrush="AliceBlue" BorderThickness="2" Background="DimGray" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel  x:Name="LeftCameraSettings" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <DockPanel LastChildFill="False">
+                    <Button DockPanel.Dock="Right"                                     
+                                    Width="11"
+                                    Height="11"
+                                    Background="Red"
+                            Click="Button_Click"
+                                    >
+                        
+                        <Button.Content>
+                            <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" VerticalAlignment="Center"  HorizontalAlignment="Center" Stroke="White" StrokeThickness="2"/>
+                        </Button.Content>
+                    </Button>
+                </DockPanel>
+                <UniformGrid Margin="3" Columns="2"  Background="DimGray">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Control">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <TextBlock Text="Монохром"/>
+                    <CheckBox IsChecked="{Binding Monochrome}" Name="myCheckMono"/>
+                    <TextBlock Text="Яркость"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Value="{Binding Brightness}" Name="BrightnessSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                        <Label Content="{Binding ElementName=BrightnessSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
+                    </StackPanel>
+                    <TextBlock Text="Контраст"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Value="{Binding Contrast}" Name="ContrastSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                        <Label Content="{Binding ElementName=ContrastSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
+                    </StackPanel>
+                    <TextBlock Text="Насыщение"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Value="{Binding Saturation}" Name="SaturationSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                        <Label Content="{Binding ElementName=SaturationSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
+                    </StackPanel>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

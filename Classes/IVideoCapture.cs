@@ -5,14 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace ExposureMachine.Classes
-{   
-    public struct CameraSettings
+namespace ExposureMachine
+{
+    public class CameraSettings
     {
         public bool monochrome;
         public int brightness;
         public int contrast;
+        public int saturation;
     }
+}
+
+namespace ExposureMachine.Classes
+{   
+    
     interface IVideoCapture
     {   
         public void StartCamera(int index);

@@ -45,45 +45,46 @@ namespace ExposureMachine.ViewModel
         public ICommand PushCmd { get; set; }
         public ICommand SettingsCmd { get; set; }
         public ICommand PromptsCmd { get; set; }
+        public ICommand ShowVideoSettingsCmd { get; set; }
         private IVideoCapture LeftCamera;
         private IVideoCapture RightCamera;
         private byte _valvesCondition = default;
         public BitmapImage LeftImage { get; set; }
         public BitmapImage RightImage { get; set; }
         public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;
-        public bool LeftMonochrome
+        public bool MyVisibility { get; set; } = false;
+
+        private CameraSettings _leftCameraSettings;
+        public CameraSettings LeftCameraSettings 
         {
+            get => _leftCameraSettings;
             set
             {
-                _leftCamSettings.monochrome = value;
-                CameraSettings(LeftCamera, _leftCamSettings);
+                _leftCameraSettings = value;
+                CameraSettings(LeftCamera, value);
             }
         }
-        public int LeftBrightness 
-        {           
-            set 
-            {
-                _leftCamSettings.brightness = value;
-                CameraSettings(LeftCamera, _leftCamSettings);
-            }
-        }
-        public int LeftContrast
+
+        private CameraSettings _rightCameraSettings;
+        public CameraSettings RightCameraSettings
         {
+            get => _rightCameraSettings;
             set
             {
-                _leftCamSettings.contrast = value;
-                CameraSettings(LeftCamera, _leftCamSettings);
+                _rightCameraSettings = value;
+                CameraSettings(RightCamera, value);
             }
         }
-        private CameraSettings _leftCamSettings;
-       
         internal MainViewModel()
         {
             PushCmd = new Command(args => PushTheButton(args));
             ((Command)PushCmd).CanExecuteDelegate = StopExec;
             SettingsCmd = new Command(args => Settings());
             PromptsCmd = new Command(args => SetPrompts());
+            ShowVideoSettingsCmd = new Command(args => ShowVideoSettings());
             _comValves = new ValveSet("COM3");
+            LeftCameraSettings = new() { brightness = 12, contrast = 32, monochrome = true, saturation = 56 };
+            RightCameraSettings = new() { brightness = 10, contrast = 26, monochrome = true, saturation = 55 };
             //try
             //{
             //    LeftCamera = new ToupCamera();
@@ -99,9 +100,14 @@ namespace ExposureMachine.ViewModel
             //}
         }
 
+        private void ShowVideoSettings()
+        {
+            MyVisibility = true;
+        }
+
         private void CameraSettings(IVideoCapture cam, CameraSettings settings)
         {           
-            cam.SetSettings(settings);
+            cam?.SetSettings(settings);
         }
         private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
         {
@@ -122,7 +128,7 @@ namespace ExposureMachine.ViewModel
                 Visibility.Visible => Visibility.Collapsed
             };
         }
-
+        
         private ICOM _comValves;
         private void Settings()
         {

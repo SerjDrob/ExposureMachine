@@ -5,32 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExposureMachine.ViewModel"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:uc="clr-namespace:ExposureMachine.View"
+        xmlns:uc1="clr-namespace:ExposureMachine.View.UserControls"
         mc:Ignorable="d"
         Title="Установка совмещения" Height="450" Width="800"  WindowState="Maximized">
     <Window.InputBindings>
         <KeyBinding Command="{Binding PromptsCmd}" Key="P"/>        
     </Window.InputBindings>
-    <Window.Resources>
-        <Storyboard x:Key="CaptureSettingsAnimation">
-            <ObjectAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=LeftCameraSettings}" 
-                                           Storyboard.TargetProperty="(UIElement.Visibility)"
-                                           Duration="0:0:0"
-                                           >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="CaptureSettingsAnimationCollapse">
-            <ObjectAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=LeftCameraSettings}" 
-                                           Storyboard.TargetProperty="(UIElement.Visibility)"
-                                           Duration="0:0:0"
-                                           >
-                <DiscreteObjectKeyFrame Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <BitmapImage x:Key="DefaultImage" UriSource="/Icons/harold-thumb.jpg" />
         
-    </Window.Resources>
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -45,13 +27,7 @@
             <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
             <ToolBar.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Настройки изображения">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Click">
-                                <i:ControlStoryboardAction Storyboard="{StaticResource ResourceKey=CaptureSettingsAnimation}"/>
-                            </i:EventTrigger>                           
-                        </i:Interaction.Triggers>
-                    </MenuItem>
+                    <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}"/>
                 </ContextMenu>
             </ToolBar.ContextMenu>
         </ToolBar>
@@ -60,61 +36,27 @@
                 <Image Source="{Binding LeftImage, Mode=OneWay}">
                     <Image.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Настройки изображения">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <i:ControlStoryboardAction Storyboard="{StaticResource ResourceKey=CaptureSettingsAnimation}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </MenuItem>
+                            <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}"/>
                         </ContextMenu>
                     </Image.ContextMenu>
                 </Image>
-                <Border BorderBrush="AliceBlue" BorderThickness="2" Background="DimGray" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                    <StackPanel  x:Name="LeftCameraSettings" Visibility="Collapsed">
-                        <DockPanel LastChildFill="False">
-                            <Button DockPanel.Dock="Right"                                     
-                                    Width="11"
-                                    Height="11"
-                                    Background="Red"                      
-                                    RenderTransformOrigin="0.5, 0.5"
-                                    >
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <i:ControlStoryboardAction Storyboard="{StaticResource CaptureSettingsAnimationCollapse}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                                <Button.Content>
-                                    <Path Data="M 0 0 L 10 10 M 10 0 L 0 10" VerticalAlignment="Center"  HorizontalAlignment="Center" Stroke="White" StrokeThickness="2"/>
-                                </Button.Content>
-                            </Button>
-                        </DockPanel>
-                        <UniformGrid Margin="3" Columns="2"  Background="DimGray">
-                            <UniformGrid.Resources>
-                                <Style TargetType="Control">
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                </Style>
-                            </UniformGrid.Resources>
-                            <TextBlock Text="Монохром"/>
-                            <CheckBox IsChecked="{Binding LeftMonochrome}"/>
-                            <TextBlock Text="Яркость"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Slider Value="{Binding LeftBrightness}" Name="BrightnessSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
-                                <Label Content="{Binding ElementName=BrightnessSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
-                            </StackPanel>
-                            <TextBlock Text="Контраст"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Slider Value="{Binding LeftContrast}" Name="ContrastSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Width="100" TickFrequency="1" IsSnapToTickEnabled="True"/>
-                                <Label Content="{Binding ElementName=ContrastSlider, Path=Value}" VerticalContentAlignment="Center" Width="30"/>
-                            </StackPanel>
-                        </UniformGrid>
-                    </StackPanel>
-                </Border>
+                <uc:VideoSettingsPanel 
+                    ImVisible="{Binding MyVisibility}"
+                    Settings="{Binding LeftCameraSettings}"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                />               
             </Grid>
         </Border>
         <Border BorderThickness="3" BorderBrush="Gray" Grid.Column="1" Grid.Row="1">
-            <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
-        </Border>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
+                <uc:VideoSettingsPanel
+                    ImVisible="{Binding MyVisibility}"
+                    Settings="{Binding RightCameraSettings}"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    />
+            </Grid>
+        </Border>        
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="2" Rows="2" Columns="5">
             <UniformGrid.Resources>
                 <Style TargetType="ToggleButton">
@@ -176,7 +118,7 @@
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Экспонирование</TextBlock>
                     <AccessText Text="_Q" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
-            </ToggleButton>
+            </ToggleButton>            
         </UniformGrid>
     </Grid>
 </Window>
