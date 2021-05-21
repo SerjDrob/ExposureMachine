@@ -11,33 +11,12 @@ using ExposureMachine.Classes;
 using ExposureMachine.View;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using PropertyChanged; 
+using PropertyChanged;
+using ExposureMachine.Common;
 
 namespace ExposureMachine.ViewModel
 {
-    [Flags]
-    public enum Buttons
-    {
-        [Description("Юстировка ФШ")]
-        AlignmentMask = 0b00000001,
-        [Description("Фиксация ФШ")]
-        FixingMask = 0b00000010,
-        [Description("Фиксация рамки ФШ")]
-        FixingFrame = 0b00000100,
-        [Description("Фиксация подложки")]
-        FixingSubstrate = 0b00001000,
-        [Description("Столик шаровая опора")]
-        BallSupport = 0b00010000,
-        [Description("Подъём столика")]
-        LiftingTable = 0b00100000,
-        [Description("Фиксация столика")]
-        FixingTable = 0b01000000,
-        [Description("Зазор")]
-        Gap = 0b10000000,
-        [Description("Экспонирование")]
-        Exposing = 0b100000000,
-    }
-       
+
 
     [AddINotifyPropertyChangedInterface] 
     class MainViewModel
@@ -46,13 +25,13 @@ namespace ExposureMachine.ViewModel
         public ICommand SettingsCmd { get; set; }
         public ICommand PromptsCmd { get; set; }
         public ICommand ShowVideoSettingsCmd { get; set; }
+        public ICommand OnMainViewClosingCmd { get; set; }
         private IVideoCapture LeftCamera;
         private IVideoCapture RightCamera;
         private byte _valvesCondition = default;
         public BitmapImage LeftImage { get; set; }
         public BitmapImage RightImage { get; set; }
-        public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;
-        public bool MyVisibility { get; set; } = false;
+        public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;        
 
         private CameraSettings _leftCameraSettings;
         public CameraSettings LeftCameraSettings 
@@ -75,38 +54,87 @@ namespace ExposureMachine.ViewModel
                 CameraSettings(RightCamera, value);
             }
         }
+
+        public bool LeftCameraVisibility { get; set; } = false;
+        public bool RightCameraVisibility { get; set; } = false;
+
         internal MainViewModel()
         {
             PushCmd = new Command(args => PushTheButton(args));
             ((Command)PushCmd).CanExecuteDelegate = StopExec;
             SettingsCmd = new Command(args => Settings());
             PromptsCmd = new Command(args => SetPrompts());
-            ShowVideoSettingsCmd = new Command(args => ShowVideoSettings());
+            ShowVideoSettingsCmd = new Command(args => ShowVideoSettings(args));
+            OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
             _comValves = new ValveSet("COM3");
-            LeftCameraSettings = new() { brightness = 12, contrast = 32, monochrome = true, saturation = 56 };
-            RightCameraSettings = new() { brightness = 10, contrast = 26, monochrome = true, saturation = 55 };
-            //try
-            //{
-            //    LeftCamera = new ToupCamera();
-            //    RightCamera = new ToupCamera();
-            //    LeftCamera.StartCamera(0);
-            //    RightCamera.StartCamera(1);
-            //    LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
-            //    RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
-            //}
-            //catch (Exception e)
-            //{
-            //    System.Windows.MessageBox.Show(e.Message);
-            //}
+           
+            LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
+            RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
+            _valveAssignment = ApplyValveAssignment(ProgSettings.Default.ValvesSettings);
+            try
+            {
+                LeftCamera = new ToupCamera();
+                RightCamera = new ToupCamera();
+                CameraSettings(LeftCamera, LeftCameraSettings);
+                CameraSettings(RightCamera, RightCameraSettings);
+                
+                LeftCamera.StartCamera(0);
+                RightCamera.StartCamera(1);
+                LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+                RightCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+            }
+            catch (Exception e)
+            {
+                System.Windows.MessageBox.Show(e.Message);
+            }
         }
 
-        private void ShowVideoSettings()
+        private Dictionary<Buttons, int> ApplyValveAssignment(string filename)
         {
-            MyVisibility = true;
+            var result = StaticMethods.DeSerializeObjectJson<Dictionary<Buttons, int>>(ProgSettings.Default.ValvesSettings);
+            if (result is null)
+            {
+                result = new()
+                {
+                    { Buttons.AlignmentMask, 1 },
+                    { Buttons.BallSupport, 2 },
+                    { Buttons.Exposing, 8 },
+                    { Buttons.FixingFrame, 3 },
+                    { Buttons.FixingMask, 4 },
+                    { Buttons.FixingSubstrate, 5 },
+                    { Buttons.FixingTable, 6 },
+                    { Buttons.Gap, 7 },
+                    { Buttons.LiftingTable, 0 }
+                };
+            }
+            return result;
+        }
+        private CameraSettings ApplyCameraSettings(string filename)
+        {
+            var s = StaticMethods.DeSerializeObjectJson<CameraSettings>(filename);
+            
+            if (s is null)
+            {
+                s = new() { Brightness = 10, Contrast = 26, Monochrome = true, Saturation = 55 };
+            }
+            return s;
+        }
+        public void OnMainViewClosing(object e)
+        {
+            var res = LeftCameraSettings.SerializeToJson(ProgSettings.Default.LeftCameraSettings);
+            res = RightCameraSettings.SerializeToJson(ProgSettings.Default.RightCameraSettings);
+        }
+        private void ShowVideoSettings(object obj)
+        {
+            if (obj is string)
+            {
+                LeftCameraVisibility = (string)obj == "LeftCam";
+                RightCameraVisibility = (string)obj == "RightCam";
+            }
         }
 
         private void CameraSettings(IVideoCapture cam, CameraSettings settings)
-        {           
+        {   
             cam?.SetSettings(settings);
         }
         private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
@@ -130,9 +158,10 @@ namespace ExposureMachine.ViewModel
         }
         
         private ICOM _comValves;
+        private Dictionary<Buttons, int> _valveAssignment;
         private void Settings()
         {
-            new SettingsView() { DataContext = new SettingsViewModel(_comValves) }.Show();
+            new SettingsView() { DataContext = new SettingsViewModel(_comValves, _valveAssignment) }.Show();
         }
 
         private void PushTheButton(object parameter)
@@ -163,7 +192,8 @@ namespace ExposureMachine.ViewModel
                         default:
                             break;
                     } 
-                    _valvesCondition ^= (byte)button;
+                    var v = (byte)(1 << (_valveAssignment[button] - 1));
+                    _valvesCondition ^= (byte)(1<<(_valveAssignment[button]-1));
                     _comValves.WriteLine(_valvesCondition.ByteToString());
                     Trace.WriteLine(_valvesCondition.ByteToString());
                     break;

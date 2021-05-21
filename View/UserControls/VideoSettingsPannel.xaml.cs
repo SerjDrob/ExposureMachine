@@ -45,10 +45,10 @@ namespace ExposureMachine.View
             var o = (VideoSettingsPanel)d;            
             o.Settings = new CameraSettings()
             {
-                monochrome = o.Monochrome,
-                brightness = o.Brightness,
-                contrast = o.Contrast,
-                saturation = o.Saturation
+                Monochrome = o.Monochrome,
+                Brightness = o.Brightness,
+                Contrast = o.Contrast,
+                Saturation = o.Saturation
             };
         }
 
@@ -100,10 +100,10 @@ namespace ExposureMachine.View
         {
             var o = (VideoSettingsPanel)d;
             var settings = (CameraSettings)e.NewValue;
-            o.Monochrome = settings.monochrome;
-            o.Saturation = settings.saturation;
-            o.Brightness = settings.brightness;
-            o.Contrast = settings.contrast;
+            o.Monochrome = settings.Monochrome;
+            o.Saturation = settings.Saturation;
+            o.Brightness = settings.Brightness;
+            o.Contrast = settings.Contrast;
         }
 
         public bool ImVisible

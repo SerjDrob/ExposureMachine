@@ -217,10 +217,10 @@ namespace ExposureMachine.Classes
 
         public void SetSettings(CameraSettings settings)
         {
-            cam_.put_Chrome(settings.monochrome);
-            cam_.put_Brightness(settings.brightness);
-            cam_.put_Contrast(settings.contrast);
-            cam_.put_Saturation(settings.saturation);
+            cam_.put_Chrome(settings.Monochrome);
+            cam_.put_Brightness(settings.Brightness);
+            cam_.put_Contrast(settings.Contrast);
+            cam_.put_Saturation(settings.Saturation);
         }
     }
 }

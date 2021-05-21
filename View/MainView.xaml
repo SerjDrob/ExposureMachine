@@ -3,16 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ExposureMachine.ViewModel"
+        xmlns:local="clr-namespace:ExposureMachine.Common"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:uc="clr-namespace:ExposureMachine.View"
         xmlns:uc1="clr-namespace:ExposureMachine.View.UserControls"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Установка совмещения" Height="450" Width="800"  WindowState="Maximized">
     <Window.InputBindings>
         <KeyBinding Command="{Binding PromptsCmd}" Key="P"/>        
     </Window.InputBindings>
-        
+    <Window.Resources>
+        <System:String x:Key="LeftCam">LeftCam</System:String>
+        <System:String x:Key="RightCam">RightCam</System:String>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCmd}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -27,7 +36,7 @@
             <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
             <ToolBar.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}"/>
+                    <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
                 </ContextMenu>
             </ToolBar.ContextMenu>
         </ToolBar>
@@ -36,12 +45,12 @@
                 <Image Source="{Binding LeftImage, Mode=OneWay}">
                     <Image.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}"/>
+                            <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
                         </ContextMenu>
                     </Image.ContextMenu>
                 </Image>
                 <uc:VideoSettingsPanel 
-                    ImVisible="{Binding MyVisibility}"
+                    ImVisible="{Binding LeftCameraVisibility}"
                     Settings="{Binding LeftCameraSettings}"
                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 />               
@@ -49,9 +58,15 @@
         </Border>
         <Border BorderThickness="3" BorderBrush="Gray" Grid.Column="1" Grid.Row="1">
             <Grid Grid.Row="1" Grid.Column="1">
-                <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
+                <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1">
+                    <Image.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource RightCam}"/>
+                        </ContextMenu>
+                    </Image.ContextMenu>
+                </Image>
                 <uc:VideoSettingsPanel
-                    ImVisible="{Binding MyVisibility}"
+                    ImVisible="{Binding RightCameraVisibility}"
                     Settings="{Binding RightCameraSettings}"
                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
                     />

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
 
 namespace ExposureMachine.Classes
 {
@@ -32,6 +35,32 @@ namespace ExposureMachine.Classes
                 str = ((((1 << i) & theByte) > 0) ? "1" : "0") + str;
             }
             return str;
+        }
+        public static bool SerializeToJson(this object obj, string filename)
+        {
+            try
+            {
+                File.WriteAllText(filename, JsonSerializer.Serialize(obj));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;            
+        }
+       
+        public static T DeSerializeObjectJson<T>(string filename)
+        {
+            try
+            {
+                var file = File.ReadAllText(filename);
+                return JsonSerializer.Deserialize<T>(file);
+            }
+            catch (Exception)
+            {
+                return default(T);
+            }
+            
         }
     }
 }

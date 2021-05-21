@@ -3,14 +3,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ExposureMachine.View"
+        xmlns:local="clr-namespace:ExposureMachine.Common"    
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:converters="clr-namespace:ExposureMachine.View.Converters"
         mc:Ignorable="d"
-        Title="Настройки" Height="auto" Width="auto" SizeToContent="WidthAndHeight">
+        Title="Настройки" Height="auto" Width="auto" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Window.Resources>
+        <converters:GetValueFromDictionaryConverter x:Key="GetValueFromDictionaryConverter"/>
+        <converters:MakeItemsConverter x:Key="MakeItemsConverter"/>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCmd}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="ComboBox">
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Width" Value="150"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="ItemsSource">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource MakeItemsConverter}" Mode="OneWay">
+                            <Binding Path="DataContext.ValveNums" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}"/>
+                            <Binding RelativeSource="{RelativeSource Self}" Path="Tag"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="SelectedItem" Value="{Binding MyProp, Mode=OneWayToSource}"/>
+                <Setter Property="SelectedIndex">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource GetValueFromDictionaryConverter}" Mode="OneWay">
+                            <Binding Path="DataContext.ValveAssignment" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}"/>
+                            <Binding RelativeSource="{RelativeSource Self}" Path="Tag"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </Style>            
+        </Grid.Resources>
         <UniformGrid Columns="2">
             <Label Content="Управление клапанами"/>
-            <StackPanel Orientation="Horizontal" Margin="2">
-                <ComboBox Width="100" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}"/>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Width="100" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}" Style="{x:Null}"/>
                 <Rectangle Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="10,0,0,0">
                     <Rectangle.Style>
                         <Style TargetType="Rectangle">
@@ -21,12 +56,28 @@
                                         <Binding Path="MyPortIsConnected"/>
                                     </DataTrigger.Binding>
                                     <Setter Property="Fill" Value="LawnGreen"/>
-                                </DataTrigger>
+                                </DataTrigger>                                
                             </Style.Triggers>
                         </Style>
                     </Rectangle.Style>
                 </Rectangle>
             </StackPanel>
+            <Label Name="rrr" Content="Юстировка ФШ"/>
+            <ComboBox Tag="{x:Static local:Buttons.AlignmentMask}"/>
+            <Label Content="Фиксация ФШ"/>
+            <ComboBox Tag="{x:Static local:Buttons.FixingMask}"/>
+            <Label Content="Фиксация рамки ФШ"/>
+            <ComboBox Tag="{x:Static local:Buttons.FixingFrame}"/>
+            <Label Content="Фиксация подложки"/>
+            <ComboBox Tag="{x:Static local:Buttons.FixingSubstrate}"/>
+            <Label Content="Столик шаровая опора"/>
+            <ComboBox Tag="{x:Static local:Buttons.BallSupport}"/>
+            <Label Content="Подъём столика"/>
+            <ComboBox Tag="{x:Static local:Buttons.LiftingTable}"/>
+            <Label Content="Фиксация столика"/>
+            <ComboBox Tag="{x:Static local:Buttons.FixingTable}"/>
+            <Label Content="Зазор"/>
+            <ComboBox Tag="{x:Static local:Buttons.Gap}"/>
         </UniformGrid>
     </Grid>
 </Window>
