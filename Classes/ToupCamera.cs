@@ -123,22 +123,11 @@ namespace ExposureMachine.Classes
                     }
                     else
                     {
-                        bool autoexpo = true;
+                        bool autoexpo = false;
                         cam_.get_AutoExpoEnable(out autoexpo);
                     }
                 }
-
-
-              //  CapturingTask = new Task(() =>
-              //  {
-              //      while (true)
-              //      {
-              //          OnEventImage();
-              //      }
-              //  });
-              //  CapturingTask.ConfigureAwait(false);
-              //  CapturingTask.Start();
-              //// CapturingTask.RunSynchronously();
+                              
             }
         }
         private Task CapturingTask; 
@@ -217,10 +206,11 @@ namespace ExposureMachine.Classes
 
         public void SetSettings(CameraSettings settings)
         {
-            cam_.put_Chrome(settings.Monochrome);
-            cam_.put_Brightness(settings.Brightness);
-            cam_.put_Contrast(settings.Contrast);
-            cam_.put_Saturation(settings.Saturation);
+            
+            cam_?.put_Chrome(settings.Monochrome);
+            cam_?.put_Brightness(settings.Brightness);
+            cam_?.put_Contrast(settings.Contrast);
+            cam_?.put_Saturation(settings.Saturation);
         }
     }
 }
