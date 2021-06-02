@@ -128,12 +128,19 @@
                     <AccessText Text="_V" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.Exposing}" IsChecked="{Binding IsExposing, Mode=TwoWay}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Экспонирование</TextBlock>
                     <AccessText Text="_Q" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
-            </ToggleButton>            
+            </ToggleButton>
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label Content="Время экспонирования:" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="{Binding CountDownTime}" TextAlignment="Center"/>
+                </StackPanel>                
+                <TextBlock Text="{Binding ExposingTime, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Grid>
         </UniformGrid>
     </Grid>
 </Window>

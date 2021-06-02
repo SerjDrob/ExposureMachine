@@ -49,5 +49,17 @@ namespace ExposureMachine {
                 return ((string)(this["ValvesSettings"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int ExposureTime {
+            get {
+                return ((int)(this["ExposureTime"]));
+            }
+            set {
+                this["ExposureTime"] = value;
+            }
+        }
     }
 }

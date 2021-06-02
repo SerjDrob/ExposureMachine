@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows;
 using PropertyChanged;
 using ExposureMachine.Common;
+using System.Timers;
 
 namespace ExposureMachine.ViewModel
 {
@@ -26,6 +27,10 @@ namespace ExposureMachine.ViewModel
         public ICommand PromptsCmd { get; set; }
         public ICommand ShowVideoSettingsCmd { get; set; }
         public ICommand OnMainViewClosingCmd { get; set; }
+        public bool IsExposing { get; set; } = false;
+        public int ExposingTime { get; set; }
+        public int CountDownTime { get; set; }
+        private Timer _timer;
         private IVideoCapture LeftCamera;
         private IVideoCapture RightCamera;
         private byte _valvesCondition = default;
@@ -71,6 +76,10 @@ namespace ExposureMachine.ViewModel
             LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
             RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
             _valveAssignment = ApplyValveAssignment(ProgSettings.Default.ValvesSettings);
+            _timer = new Timer();
+            _timer.Interval = 1000;
+            _timer.Elapsed += _timer_Elapsed;
+            CountDownTime = ProgSettings.Default.ExposureTime;
             try
             {
                 LeftCamera = new ToupCamera();
@@ -86,6 +95,16 @@ namespace ExposureMachine.ViewModel
             catch (Exception e)
             {
                 System.Windows.MessageBox.Show(e.Message);
+            }
+        }
+
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            ExposingTime--;
+            if (ExposingTime==0)
+            {
+                IsExposing = false;
+                _timer.Stop();
             }
         }
 
@@ -161,7 +180,8 @@ namespace ExposureMachine.ViewModel
         private Dictionary<Buttons, int> _valveAssignment;
         private void Settings()
         {
-            new SettingsView() { DataContext = new SettingsViewModel(_comValves, _valveAssignment) }.Show();
+            new SettingsView() { DataContext = new SettingsViewModel(_comValves, _valveAssignment) }.ShowDialog();
+            CountDownTime = ProgSettings.Default.ExposureTime;
         }
 
         private void PushTheButton(object parameter)
@@ -188,6 +208,10 @@ namespace ExposureMachine.ViewModel
                             break;
                         case Buttons.LiftingTable:
                             Trace.WriteLine($"{button.GetDescription()}");
+                            break;
+                        case Buttons.Exposing:
+                            ExposingTime = CountDownTime;
+                            _timer.Start();
                             break;
                         default:
                             break;
