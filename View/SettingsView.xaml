@@ -42,7 +42,7 @@
                 </Setter>
             </Style>            
         </Grid.Resources>
-        <UniformGrid Columns="2">
+        <UniformGrid Columns="2" Margin="2">
             <Label Content="Управление клапанами"/>
             <StackPanel Orientation="Horizontal">
                 <ComboBox Width="100" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}" Style="{x:Null}"/>
@@ -78,6 +78,8 @@
             <ComboBox Tag="{x:Static local:Buttons.FixingTable}"/>
             <Label Content="Зазор"/>
             <ComboBox Tag="{x:Static local:Buttons.Gap}"/>
+            <Label Content="Время экспонирования, с"/>
+            <TextBox Text="{Binding ExposureTime}" Width="100" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         </UniformGrid>
     </Grid>
 </Window>

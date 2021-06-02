@@ -23,7 +23,8 @@ namespace ExposureMachine.ViewModel
             CurrentPortIndex = new List<string>(com.AvailablePorts).FindIndex(name => name == com.ConnectedPort);
             MyPortIsConnected = com.ConnectedPort is not null ? true : false;
             ValveNums = new() { 1, 2, 3, 4, 5, 6, 7 };
-            ValveAssignment = valveAsignment;            
+            ValveAssignment = valveAsignment;
+            ExposureTime = ProgSettings.Default.ExposureTime;
         }
         public ICommand OnMainViewClosingCmd { get; set; }
         public ObservableCollection<int> ValveNums { get; set; }
@@ -42,8 +43,11 @@ namespace ExposureMachine.ViewModel
         public int CurrentPortIndex { get; set; }
         public bool MyPortIsConnected { get; }        
         public ObservableCollection<string> ComPorts { get; init; }
+        public int ExposureTime { get; set; }
         public void OnMainViewClosing(object e)
         {
+            ProgSettings.Default.ExposureTime = ExposureTime;
+            ProgSettings.Default.Save();
             var r = ValveAssignment;
             ValveAssignment.SerializeToJson(ProgSettings.Default.ValvesSettings);
         }
