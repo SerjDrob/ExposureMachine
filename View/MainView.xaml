@@ -83,7 +83,7 @@
             <ToggleButton HorizontalContentAlignment="Stretch" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" >
                 <Grid>
                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Юстировка ФШ</TextBlock>
-                   <AccessText Text="_A" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
+                    <AccessText Text="_A" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>                
             </ToggleButton>
             <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}">
@@ -116,13 +116,13 @@
                     <AccessText Text="_X" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton>                
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingTable}">                
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация подъёма столика</TextBlock>
                     <AccessText Text="_C" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton>
+            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.Gap}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Зазор</TextBlock>
                     <AccessText Text="_V" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>

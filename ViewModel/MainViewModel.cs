@@ -66,7 +66,7 @@ namespace ExposureMachine.ViewModel
             PromptsCmd = new Command(args => SetPrompts());
             ShowVideoSettingsCmd = new Command(args => ShowVideoSettings(args));
             OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
-            _comValves = new ValveSet("COM3");
+            _comValves = new ValveSet("COM4");
            
             LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
             RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);

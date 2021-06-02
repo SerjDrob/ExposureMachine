@@ -22,7 +22,7 @@ namespace ExposureMachine.ViewModel
             ComPorts = new ObservableCollection<string>(com.AvailablePorts);
             CurrentPortIndex = new List<string>(com.AvailablePorts).FindIndex(name => name == com.ConnectedPort);
             MyPortIsConnected = com.ConnectedPort is not null ? true : false;
-            ValveNums = new() { 1, 2, 3, 4, 5, 6, 7 };
+            ValveNums = new() {1, 2, 3, 4, 5, 6, 7, 8 };
             ValveAssignment = valveAsignment;            
         }
         public ICommand OnMainViewClosingCmd { get; set; }
