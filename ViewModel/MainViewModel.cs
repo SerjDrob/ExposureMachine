@@ -15,11 +15,11 @@ using PropertyChanged;
 using ExposureMachine.Common;
 using System.Timers;
 
+
+
 namespace ExposureMachine.ViewModel
 {
-
-
-    [AddINotifyPropertyChangedInterface] 
+    [AddINotifyPropertyChangedInterface]
     class MainViewModel
     {
         public ICommand PushCmd { get; set; }
@@ -27,6 +27,7 @@ namespace ExposureMachine.ViewModel
         public ICommand PromptsCmd { get; set; }
         public ICommand ShowVideoSettingsCmd { get; set; }
         public ICommand OnMainViewClosingCmd { get; set; }
+        public ICommand MirrorCameraCmd { get; set; }
         public bool IsExposing { get; set; } = false;
         public int ExposingTime { get; set; }
         public int CountDownTime { get; set; }
@@ -36,10 +37,10 @@ namespace ExposureMachine.ViewModel
         private byte _valvesCondition = default;
         public BitmapImage LeftImage { get; set; }
         public BitmapImage RightImage { get; set; }
-        public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;        
+        public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;
 
         private CameraSettings _leftCameraSettings;
-        public CameraSettings LeftCameraSettings 
+        public CameraSettings LeftCameraSettings
         {
             get => _leftCameraSettings;
             set
@@ -62,6 +63,11 @@ namespace ExposureMachine.ViewModel
 
         public bool LeftCameraVisibility { get; set; } = false;
         public bool RightCameraVisibility { get; set; } = false;
+        public bool LeftCameraXMirror { get; set; }
+        public bool RightCameraXMirror { get; set; }
+        public bool LeftCameraYMirror { get; set; }
+        public bool RightCameraYMirror { get; set; }
+
 
         internal MainViewModel()
         {
@@ -71,8 +77,9 @@ namespace ExposureMachine.ViewModel
             PromptsCmd = new Command(args => SetPrompts());
             ShowVideoSettingsCmd = new Command(args => ShowVideoSettings(args));
             OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
+            MirrorCameraCmd = new Command(args => MirrorCamera(args));
             _comValves = new ValveSet("COM4");
-           
+
             LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
             RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
             _valveAssignment = ApplyValveAssignment(ProgSettings.Default.ValvesSettings);
@@ -86,7 +93,7 @@ namespace ExposureMachine.ViewModel
                 RightCamera = new ToupCamera();
                 CameraSettings(LeftCamera, LeftCameraSettings);
                 CameraSettings(RightCamera, RightCameraSettings);
-                
+
                 LeftCamera.StartCamera(0);
                 RightCamera.StartCamera(1);
                 LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
@@ -94,14 +101,42 @@ namespace ExposureMachine.ViewModel
             }
             catch (Exception e)
             {
-                System.Windows.MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
             }
         }
 
+        private void MirrorCamera(object cameraTransforms)
+        {
+            switch (cameraTransforms)
+            {
+                case CameraTransforms transforms:
+                    switch (transforms)
+                    {
+                        case CameraTransforms.LeftCameraXMirror:
+                            LeftCameraXMirror ^= true;
+                            break;
+                        case CameraTransforms.LeftCameraYMirror:
+                            LeftCameraYMirror ^= true;
+                            break;
+                        case CameraTransforms.RightCameraXMirror:
+                            RightCameraXMirror ^= true;
+                            break;
+                        case CameraTransforms.RightCameraYMirror:
+                            RightCameraYMirror ^= true;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             ExposingTime--;
-            if (ExposingTime==0)
+            if (ExposingTime == 0)
             {
                 IsExposing = false;
                 _timer.Stop();
@@ -131,7 +166,7 @@ namespace ExposureMachine.ViewModel
         private CameraSettings ApplyCameraSettings(string filename)
         {
             var s = StaticMethods.DeSerializeObjectJson<CameraSettings>(filename);
-            
+
             if (s is null)
             {
                 s = new() { Brightness = 10, Contrast = 26, Monochrome = true, Saturation = 55 };
@@ -153,7 +188,7 @@ namespace ExposureMachine.ViewModel
         }
 
         private void CameraSettings(IVideoCapture cam, CameraSettings settings)
-        {   
+        {
             cam?.SetSettings(settings);
         }
         private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
@@ -175,7 +210,7 @@ namespace ExposureMachine.ViewModel
                 Visibility.Visible => Visibility.Collapsed
             };
         }
-        
+
         private ICOM _comValves;
         private Dictionary<Buttons, int> _valveAssignment;
         private void Settings()
@@ -191,10 +226,10 @@ namespace ExposureMachine.ViewModel
                 case Buttons button:
                     switch (button)
                     {
-                        case Buttons.AlignmentMask:                            
+                        case Buttons.AlignmentMask:
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
-                        case Buttons.FixingMask:                            
+                        case Buttons.FixingMask:
                             Trace.WriteLine($"{button.GetDescription()}");
                             break;
                         case Buttons.FixingFrame:
@@ -215,13 +250,13 @@ namespace ExposureMachine.ViewModel
                             break;
                         default:
                             break;
-                    } 
-                    var v = (byte)(1 << (_valveAssignment[button] - 1));
-                    _valvesCondition ^= (byte)(1<<(_valveAssignment[button]-1));
+                    }
+                    var v = (byte)(1 << _valveAssignment[button] - 1);
+                    _valvesCondition ^= (byte)(1 << _valveAssignment[button] - 1);
                     _comValves.WriteLine(_valvesCondition.ByteToString());
                     Trace.WriteLine(_valvesCondition.ByteToString());
                     break;
-                   
+
                 default:
                     break;
             }
