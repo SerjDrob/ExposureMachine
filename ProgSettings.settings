@@ -11,8 +11,26 @@
     <Setting Name="ValvesSettings" Type="System.String" Scope="Application">
       <Value Profile="(Default)">..\ValveSettings.json</Value>
     </Setting>
-    <Setting Name="ExposureTime" Type="System.Int32" Scope="User">
+    <Setting Name="ExposureTime" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="LeftCameraXMirror" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LeftCameraYMirror" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="RightCameraXMirror" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="RightCameraYMirror" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LeftCameraColumn" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="RightCameraColumn" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
     </Setting>
   </Settings>
 </SettingsFile>

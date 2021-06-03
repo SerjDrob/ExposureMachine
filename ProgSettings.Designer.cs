@@ -50,15 +50,84 @@ namespace ExposureMachine {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public int ExposureTime {
             get {
                 return ((int)(this["ExposureTime"]));
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LeftCameraXMirror {
+            get {
+                return ((bool)(this["LeftCameraXMirror"]));
+            }
             set {
-                this["ExposureTime"] = value;
+                this["LeftCameraXMirror"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LeftCameraYMirror {
+            get {
+                return ((bool)(this["LeftCameraYMirror"]));
+            }
+            set {
+                this["LeftCameraYMirror"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RightCameraXMirror {
+            get {
+                return ((bool)(this["RightCameraXMirror"]));
+            }
+            set {
+                this["RightCameraXMirror"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RightCameraYMirror {
+            get {
+                return ((bool)(this["RightCameraYMirror"]));
+            }
+            set {
+                this["RightCameraYMirror"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LeftCameraColumn {
+            get {
+                return ((int)(this["LeftCameraColumn"]));
+            }
+            set {
+                this["LeftCameraColumn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int RightCameraColumn {
+            get {
+                return ((int)(this["RightCameraColumn"]));
+            }
+            set {
+                this["RightCameraColumn"] = value;
             }
         }
     }

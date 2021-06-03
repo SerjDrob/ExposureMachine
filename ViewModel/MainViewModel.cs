@@ -28,6 +28,7 @@ namespace ExposureMachine.ViewModel
         public ICommand ShowVideoSettingsCmd { get; set; }
         public ICommand OnMainViewClosingCmd { get; set; }
         public ICommand MirrorCameraCmd { get; set; }
+        public ICommand ReplaceCamerasCmd { get; set; }
         public bool IsExposing { get; set; } = false;
         public int ExposingTime { get; set; }
         public int CountDownTime { get; set; }
@@ -67,8 +68,8 @@ namespace ExposureMachine.ViewModel
         public bool RightCameraXMirror { get; set; }
         public bool LeftCameraYMirror { get; set; }
         public bool RightCameraYMirror { get; set; }
-
-
+        public int LeftCameraColumn { get; set; } = 0;
+        public int RightCameraColumn { get; set; } = 2;
         internal MainViewModel()
         {
             PushCmd = new Command(args => PushTheButton(args));
@@ -78,10 +79,18 @@ namespace ExposureMachine.ViewModel
             ShowVideoSettingsCmd = new Command(args => ShowVideoSettings(args));
             OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
             MirrorCameraCmd = new Command(args => MirrorCamera(args));
+            ReplaceCamerasCmd = new Command(args => ReplaceCameras());
             _comValves = new ValveSet("COM4");
 
             LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
             RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
+            LeftCameraXMirror = ProgSettings.Default.LeftCameraXMirror;
+            LeftCameraYMirror = ProgSettings.Default.LeftCameraYMirror;
+            LeftCameraColumn = ProgSettings.Default.LeftCameraColumn;
+            RightCameraXMirror = ProgSettings.Default.RightCameraXMirror;
+            RightCameraYMirror = ProgSettings.Default.RightCameraYMirror;
+            RightCameraColumn = ProgSettings.Default.RightCameraColumn;
+
             _valveAssignment = ApplyValveAssignment(ProgSettings.Default.ValvesSettings);
             _timer = new Timer();
             _timer.Interval = 1000;
@@ -177,6 +186,14 @@ namespace ExposureMachine.ViewModel
         {
             var res = LeftCameraSettings.SerializeToJson(ProgSettings.Default.LeftCameraSettings);
             res = RightCameraSettings.SerializeToJson(ProgSettings.Default.RightCameraSettings);
+
+            ProgSettings.Default.LeftCameraXMirror = LeftCameraXMirror;
+            ProgSettings.Default.LeftCameraYMirror = LeftCameraYMirror;
+            ProgSettings.Default.LeftCameraColumn = LeftCameraColumn;
+            ProgSettings.Default.RightCameraXMirror = RightCameraXMirror;
+            ProgSettings.Default.RightCameraYMirror = RightCameraYMirror;
+            ProgSettings.Default.RightCameraColumn = RightCameraColumn;
+            ProgSettings.Default.Save();
         }
         private void ShowVideoSettings(object obj)
         {
@@ -186,7 +203,10 @@ namespace ExposureMachine.ViewModel
                 RightCameraVisibility = (string)obj == "RightCam";
             }
         }
-
+        private void ReplaceCameras()
+        {
+            (LeftCameraColumn, RightCameraColumn) = (RightCameraColumn, LeftCameraColumn);
+        }
         private void CameraSettings(IVideoCapture cam, CameraSettings settings)
         {
             cam?.SetSettings(settings);

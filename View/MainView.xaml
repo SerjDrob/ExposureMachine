@@ -35,7 +35,7 @@
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ToolBar Grid.ColumnSpan="2">
+        <ToolBar Grid.ColumnSpan="3">
             <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
             <ToolBar.ContextMenu>
                 <ContextMenu>
@@ -43,28 +43,54 @@
                 </ContextMenu>
             </ToolBar.ContextMenu>
         </ToolBar>
-        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="3">
-            <Grid Grid.Row="1">
-                <Image Source="{Binding LeftImage, Mode=OneWay}">
-                    <Image.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
-                        </ContextMenu>
-                    </Image.ContextMenu>
+        <DockPanel Grid.Column="{Binding LeftCameraColumn, FallbackValue=0}" Grid.Row="1">
+            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
+                <Image Source="/View/Icons/clipart2208694.png"/>
+            </Button>
+            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Left">
+                <Image Source="/View/Icons/clipart2208694.png" RenderTransformOrigin="0.5 0.5">
+                    <Image.RenderTransform>
+                        <RotateTransform Angle="90"/>
+                    </Image.RenderTransform>
                 </Image>
-                <uc:VideoSettingsPanel 
+            </Button>
+            <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="3">
+                <Grid>
+                    <Image Source="{Binding LeftImage, Mode=OneWay}" RenderTransformOrigin="0.5 0.5">
+                        <Image.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
+                            </ContextMenu>
+                        </Image.ContextMenu>
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="{Binding LeftCameraXMirror, Converter={StaticResource BoolToMirrorConverter}}"
+                                            ScaleY="{Binding LeftCameraYMirror, Converter={StaticResource BoolToMirrorConverter}}"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
+                    <uc:VideoSettingsPanel 
                     ImVisible="{Binding LeftCameraVisibility}"
                     Settings="{Binding LeftCameraSettings}"
                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                />               
-            </Grid>
-        </Border>
-        <DockPanel Grid.Column="2" Grid.Row="1">
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top"/>
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Right"/>
+                />
+                </Grid>
+            </Border>
+        </DockPanel>
+        <DockPanel Grid.Column="{Binding RightCameraColumn, FallbackValue=2}" Grid.Row="1">
+            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
+                <Image Source="/View/Icons/clipart2208694.png"/>
+            </Button>
+            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Right">
+                <Image Source="/View/Icons/clipart2208694.png" RenderTransformOrigin="0.5 0.5">
+                    <Image.RenderTransform>
+                        <RotateTransform Angle="90"/>
+                    </Image.RenderTransform>
+                </Image>
+            </Button>
             <Border BorderThickness="3" BorderBrush="Gray">
-                <Grid Grid.Row="1" Grid.Column="1">
-                    <Image Source="{Binding RightImage, Mode=OneWay}" Grid.Row="1" Grid.Column="1" RenderTransformOrigin="0.5 0.5">
+                <Grid>
+                    <Image Source="{Binding RightImage, Mode=OneWay}" RenderTransformOrigin="0.5 0.5">
                         <Image.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource RightCam}"/>
@@ -85,7 +111,9 @@
                 </Grid>
             </Border>
         </DockPanel>
-        <Button Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1"/>
+        <Button Command="{Binding ReplaceCameraCmd}" Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1">
+            <Image Source="/View/Icons/18429427461560147112-24.png"/>
+        </Button>
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="3" Rows="2" Columns="5">
             <UniformGrid.Resources>
                 <Style TargetType="ToggleButton">
