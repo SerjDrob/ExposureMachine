@@ -17,7 +17,7 @@
     <Window.Resources>
         <System:String x:Key="LeftCam">LeftCam</System:String>
         <System:String x:Key="RightCam">RightCam</System:String>
-        <converters:BoolToMirrorConverter x:Key="BoolToMirrorConverter"/>
+        <converters:BoolToMirrorConverter x:Key="BoolToMirrorConverter"/>        
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -103,6 +103,7 @@
                             </TransformGroup>
                         </Image.RenderTransform>
                     </Image>
+                    
                     <uc:VideoSettingsPanel
                     ImVisible="{Binding RightCameraVisibility}"
                     Settings="{Binding RightCameraSettings}"
@@ -111,7 +112,7 @@
                 </Grid>
             </Border>
         </DockPanel>
-        <Button Command="{Binding ReplaceCameraCmd}" Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1">
+        <Button Command="{Binding ReplaceCamerasCmd}" Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1">
             <Image Source="/View/Icons/18429427461560147112-24.png"/>
         </Button>
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="3" Rows="2" Columns="5">

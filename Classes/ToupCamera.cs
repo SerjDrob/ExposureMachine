@@ -106,8 +106,7 @@ namespace ExposureMachine.Classes
             if (cam_ is null)
             {
 
-                cam_ = Toupcam.Open(devices[index]);
-                cam_.put_Chrome(true);
+                cam_ = Toupcam.Open(devices[index]);                
                 int width = 0, height = 0;
                 if (cam_.get_Size(out width, out height))
                 {
@@ -129,7 +128,7 @@ namespace ExposureMachine.Classes
                               
             }
         }
-        private Task CapturingTask; 
+        
         public void StopCamera()
         {
             throw new NotImplementedException();

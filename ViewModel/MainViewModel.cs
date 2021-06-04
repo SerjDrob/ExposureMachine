@@ -70,6 +70,7 @@ namespace ExposureMachine.ViewModel
         public bool RightCameraYMirror { get; set; }
         public int LeftCameraColumn { get; set; } = 0;
         public int RightCameraColumn { get; set; } = 2;
+        private bool LeftCamToRightCamChanged { get; set; }
         internal MainViewModel()
         {
             PushCmd = new Command(args => PushTheButton(args));
@@ -86,10 +87,10 @@ namespace ExposureMachine.ViewModel
             RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
             LeftCameraXMirror = ProgSettings.Default.LeftCameraXMirror;
             LeftCameraYMirror = ProgSettings.Default.LeftCameraYMirror;
-            LeftCameraColumn = ProgSettings.Default.LeftCameraColumn;
+            
             RightCameraXMirror = ProgSettings.Default.RightCameraXMirror;
             RightCameraYMirror = ProgSettings.Default.RightCameraYMirror;
-            RightCameraColumn = ProgSettings.Default.RightCameraColumn;
+            LeftCamToRightCamChanged = ProgSettings.Default.LeftCamToRightChanged;
 
             _valveAssignment = ApplyValveAssignment(ProgSettings.Default.ValvesSettings);
             _timer = new Timer();
@@ -189,10 +190,9 @@ namespace ExposureMachine.ViewModel
 
             ProgSettings.Default.LeftCameraXMirror = LeftCameraXMirror;
             ProgSettings.Default.LeftCameraYMirror = LeftCameraYMirror;
-            ProgSettings.Default.LeftCameraColumn = LeftCameraColumn;
             ProgSettings.Default.RightCameraXMirror = RightCameraXMirror;
             ProgSettings.Default.RightCameraYMirror = RightCameraYMirror;
-            ProgSettings.Default.RightCameraColumn = RightCameraColumn;
+            ProgSettings.Default.LeftCamToRightChanged = LeftCamToRightCamChanged;
             ProgSettings.Default.Save();
         }
         private void ShowVideoSettings(object obj)
@@ -205,7 +205,7 @@ namespace ExposureMachine.ViewModel
         }
         private void ReplaceCameras()
         {
-            (LeftCameraColumn, RightCameraColumn) = (RightCameraColumn, LeftCameraColumn);
+            LeftCamToRightCamChanged ^= true;
         }
         private void CameraSettings(IVideoCapture cam, CameraSettings settings)
         {
@@ -215,11 +215,25 @@ namespace ExposureMachine.ViewModel
         {
             if (e.DeviceNum == LeftCamera.DeviceIndex)
             {
-                LeftImage = e.BI;
+                if (LeftCamToRightCamChanged)
+                {
+                    RightImage = e.BI;
+                }
+                else
+                {
+                    LeftImage = e.BI;
+                }
             }
             if (e.DeviceNum == RightCamera.DeviceIndex)
             {
-                RightImage = e.BI;
+                if (!LeftCamToRightCamChanged)
+                {
+                    RightImage = e.BI; 
+                }
+                else
+                {
+                    LeftImage = e.BI;
+                }
             }
         }
         private void SetPrompts()
