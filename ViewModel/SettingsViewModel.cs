@@ -9,23 +9,23 @@ using ExposureMachine.Common;
 using PropertyChanged;
 using Exposure_Machine.Model;
 using System.Windows.Input;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 
 namespace ExposureMachine.ViewModel
 {
-    [AddINotifyPropertyChangedInterface]
-    class SettingsViewModel
+    [INotifyPropertyChanged]
+    public partial class SettingsViewModel
     {
         public SettingsViewModel(ICOM com, Dictionary<Buttons, int> valveAsignment)
         {
-            OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
             ComPorts = new ObservableCollection<string>(com.AvailablePorts);
             CurrentPortIndex = new List<string>(com.AvailablePorts).FindIndex(name => name == com.ConnectedPort);
             MyPortIsConnected = com.ConnectedPort is not null ? true : false;
-            ValveNums = new() {1, 2, 3, 4, 5, 6, 7, 8 };
+            ValveNums = new() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
             ValveAssignment = valveAsignment;            
         }
-        public ICommand OnMainViewClosingCmd { get; set; }
         public ObservableCollection<int> ValveNums { get; set; }
 
         private (Buttons, int) _myProp;
@@ -42,10 +42,14 @@ namespace ExposureMachine.ViewModel
         public int CurrentPortIndex { get; set; }
         public bool MyPortIsConnected { get; }        
         public ObservableCollection<string> ComPorts { get; init; }
+       
+        [ICommand]
         public void OnMainViewClosing(object e)
         {
             var r = ValveAssignment;
             ValveAssignment.SerializeToJson(ProgSettings.Default.ValvesSettings);
         }
+
+        
     }
 }

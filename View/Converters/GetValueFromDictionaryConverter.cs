@@ -16,7 +16,7 @@ namespace ExposureMachine.View.Converters
             int res = 0;
             try
             {
-                dict = (Dictionary<Buttons, int>)values[0];
+                dict = (Dictionary<Buttons, int>)values[0];               
                 key = (Buttons)values[1]!;
                 res = dict[key]-1;
             }

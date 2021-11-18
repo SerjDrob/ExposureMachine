@@ -11,19 +11,20 @@
     <Window.Resources>
         <converters:GetValueFromDictionaryConverter x:Key="GetValueFromDictionaryConverter"/>
         <converters:MakeItemsConverter x:Key="MakeItemsConverter"/>
+        <converters:VTupleConverter x:Key="VTupleConverter"/>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCmd}"/>
+            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
         <Grid.Resources>
             <Style TargetType="ComboBox">
                 <Setter Property="Margin" Value="2"/>
-                <Setter Property="Width" Value="150"/>
+                <Setter Property="Width" Value="100"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="ItemsSource">
+                <Setter Property="ItemsSource">                    
                     <Setter.Value>
                         <MultiBinding Converter="{StaticResource MakeItemsConverter}" Mode="OneWay">
                             <Binding Path="DataContext.ValveNums" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}"/>
@@ -40,12 +41,19 @@
                         </MultiBinding>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource VTupleConverter}}"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>            
         </Grid.Resources>
         <UniformGrid Columns="2" Margin="2">
             <Label Content="Управление клапанами"/>
             <StackPanel Orientation="Horizontal">
-                <ComboBox Width="100" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}" Style="{x:Null}"/>
+                <ComboBox Width="100" Margin="2" ItemsSource="{Binding ComPorts}" SelectedIndex="{Binding CurrentPortIndex}" Style="{x:Null}"/>
                 <Rectangle Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="10,0,0,0">
                     <Rectangle.Style>
                         <Style TargetType="Rectangle">
@@ -78,8 +86,10 @@
             <ComboBox Tag="{x:Static local:Buttons.FixingTable}"/>
             <Label Content="Зазор"/>
             <ComboBox Tag="{x:Static local:Buttons.Gap}"/>
+            <Label Content="Манипулятор"/>
+            <ComboBox Tag="{x:Static local:Buttons.Mouse}"/>
             <Label Content="Время экспонирования, с"/>
-            <TextBox Text="{Binding ExposureTime}" Width="100" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <TextBox Text="{Binding ExposureTime}" Width="100" Margin="2" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         </UniformGrid>
     </Grid>
 </Window>

@@ -24,5 +24,7 @@ namespace ExposureMachine.Common
         Gap = 0b10000000,
         [Description("Экспонирование")]
         Exposing = 0b100000000,
+        [Description("Манипулятор")]
+        Mouse = 0b1000000000,
     }
 }
