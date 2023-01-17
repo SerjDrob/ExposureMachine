@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="LeftCameraSettings" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\LeftCameraSettings.json</Value>
+      <Value Profile="(Default)">LeftCameraSettings.json</Value>
     </Setting>
     <Setting Name="RightCameraSettings" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\RightCameraSettings.json</Value>
+      <Value Profile="(Default)">RightCameraSettings.json</Value>
     </Setting>
     <Setting Name="ValvesSettings" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\ValveSettings.json</Value>
+      <Value Profile="(Default)">ValveSettings.json</Value>
     </Setting>
     <Setting Name="ExposureTime" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">30</Value>
