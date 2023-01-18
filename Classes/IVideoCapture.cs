@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExposureMachine
-{
-
-}
-
 namespace ExposureMachine.Classes
 {
-    internal interface IVideoCapture
+    public interface IVideoCapture
     {
         Dictionary<int, (string, string[])> AvaliableVideoCaptureDevices { get; }
         bool IsVideoCaptureConnected { get; }

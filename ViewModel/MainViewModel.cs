@@ -1,42 +1,43 @@
-﻿using Exposure_Machine.Model;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Exposure_Machine.Model;
 using ExposureMachine.Classes;
 using ExposureMachine.Common;
 using ExposureMachine.View;
-using PropertyChanged;
+//using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
 using System.Timers;
 using System.Windows;
-using System.Windows.Input;
+//using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 
 namespace ExposureMachine.ViewModel;
 
-[AddINotifyPropertyChangedInterface]
-class MainViewModel
+[INotifyPropertyChanged]
+public partial class MainViewModel
 {
-    public ICommand PushCmd { get; set; }
-    public ICommand SettingsCmd { get; set; }
-    public ICommand PromptsCmd { get; set; }
-    public ICommand ShowVideoSettingsCmd { get; set; }
-    public ICommand OnMainViewClosingCmd { get; set; }
-    public ICommand MirrorCameraCmd { get; set; }
-    public ICommand ReplaceCamerasCmd { get; set; }
-    public bool IsExposing { get; set; } = false;
-    public int ExposingTime { get; set; }
+   
     public int CountDownTime { get; set; }
     private Timer _timer;
-    private IVideoCapture LeftCamera;
-    private IVideoCapture RightCamera;
+    private readonly IVideoCapture LeftCamera;
+    private readonly IVideoCapture RightCamera;
     private byte _valvesCondition = default;
+    private ICOM _comValves;
+    private Dictionary<Buttons, int> _valveAssignment;
+    private const string SETTINGS_FOLDER = "Settings";
+    private CameraSettings _leftCameraSettings;
+    private CameraSettings _rightCameraSettings;
+
+    public bool IsExposing { get; set; } = false;
+    public int ExposingTime { get; set; }
     public BitmapImage LeftImage { get; set; }
     public BitmapImage RightImage { get; set; }
     public Visibility PromptsVisibility { get; set; } = Visibility.Collapsed;
-
-    private CameraSettings _leftCameraSettings;
     public CameraSettings LeftCameraSettings
     {
         get => _leftCameraSettings;
@@ -46,8 +47,6 @@ class MainViewModel
             CameraSettings(LeftCamera, value);
         }
     }
-
-    private CameraSettings _rightCameraSettings;
     public CameraSettings RightCameraSettings
     {
         get => _rightCameraSettings;
@@ -57,27 +56,18 @@ class MainViewModel
             CameraSettings(RightCamera, value);
         }
     }
-
     public bool LeftCameraVisibility { get; set; } = false;
     public bool RightCameraVisibility { get; set; } = false;
     public bool LeftCameraXMirror { get; set; }
     public bool RightCameraXMirror { get; set; }
     public bool LeftCameraYMirror { get; set; }
     public bool RightCameraYMirror { get; set; }
-    public int LeftCameraColumn { get; set; } = 0;
-    public int RightCameraColumn { get; set; } = 2;
     private bool LeftCamToRightCamChanged { get; set; }
-    internal MainViewModel()
+    public MainViewModel(IVideoCapture leftCamera, IVideoCapture rightCamera)
     {
-        PushCmd = new Command(args => PushTheButton(args));
-        ((Command)PushCmd).CanExecuteDelegate = StopExec;
-        SettingsCmd = new Command(args => Settings());
-        PromptsCmd = new Command(args => SetPrompts());
-        ShowVideoSettingsCmd = new Command(args => ShowVideoSettings(args));
-        OnMainViewClosingCmd = new Command(args => OnMainViewClosing(args));
-        MirrorCameraCmd = new Command(args => MirrorCamera(args));
-        ReplaceCamerasCmd = new Command(args => ReplaceCameras());
         _comValves = new ValveSet("COM5");
+        LeftCamera = leftCamera;
+        RightCamera = rightCamera;
 
         LeftCameraSettings = ApplyCameraSettings(ProgSettings.Default.LeftCameraSettings);
         RightCameraSettings = ApplyCameraSettings(ProgSettings.Default.RightCameraSettings);
@@ -95,27 +85,26 @@ class MainViewModel
         CountDownTime = ProgSettings.Default.ExposureTime;
         try
         {
-            LeftCamera = new USBCamera();// new ToupCamera();
-            RightCamera = new USBCamera();
+            //LeftCamera = new USBCamera();// new ToupCamera();
+            //RightCamera = new USBCamera();
             //CameraSettings(LeftCamera, LeftCameraSettings);
             //CameraSettings(RightCamera, RightCameraSettings);
 
             LeftCamera.StartCamera(0);
             RightCamera.StartCamera(1);
-            LeftCamera.OnBitmapChanged += Camera_OnBitmapChanged;
+            LeftCamera.OnBitmapChanged += LeftCamera_OnBitmapChanged;
             RightCamera.OnBitmapChanged += RightCamera_OnBitmapChanged;
         }
         catch (Exception e)
         {
             MessageBox.Show(e.Message);
         }
+       
     }
 
-    private void RightCamera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
-    {
-        RightImage = e.Image;
-    }
-
+    private void RightCamera_OnBitmapChanged(object sender, VideoCaptureEventArgs e) => RightImage = e.Image;
+    private void LeftCamera_OnBitmapChanged(object sender, VideoCaptureEventArgs e) => LeftImage = e.Image;
+    [RelayCommand]
     private void MirrorCamera(object cameraTransforms)
     {
         switch (cameraTransforms)
@@ -153,7 +142,6 @@ class MainViewModel
             _timer.Stop();
         }
     }
-
     private Dictionary<Buttons, int> ApplyValveAssignment()
     {
         var fileName = Path.Combine(SETTINGS_FOLDER, ProgSettings.Default.ValvesSettings);
@@ -186,6 +174,7 @@ class MainViewModel
         }
         return s;
     }
+    [RelayCommand]
     public void OnMainViewClosing(object e)
     {
         var res = LeftCameraSettings.SerializeToJson(ProgSettings.Default.LeftCameraSettings);
@@ -198,6 +187,7 @@ class MainViewModel
         ProgSettings.Default.LeftCamToRightChanged = LeftCamToRightCamChanged;
         ProgSettings.Default.Save();
     }
+    [RelayCommand]
     private void ShowVideoSettings(object obj)
     {
         if (obj is string)
@@ -206,6 +196,7 @@ class MainViewModel
             RightCameraVisibility = (string)obj == "RightCam";
         }
     }
+    [RelayCommand]
     private void ReplaceCameras()
     {
         LeftCamToRightCamChanged ^= true;
@@ -214,34 +205,7 @@ class MainViewModel
     {
         cam?.SetSettings(settings);
     }
-    private void Camera_OnBitmapChanged(object sender, VideoCaptureEventArgs e)
-    {
-       // RightImage = e.Image;
-        LeftImage = e.Image;
-
-        //if (e.DeviceNum == LeftCamera.DeviceIndex)
-        //{
-        //    if (LeftCamToRightCamChanged)
-        //    {
-        //        RightImage = e.BI;
-        //    }
-        //    else
-        //    {
-        //        LeftImage = e.BI;
-        //    }
-        //}
-        //if (e.DeviceNum == RightCamera.DeviceIndex)
-        //{
-        //    if (!LeftCamToRightCamChanged)
-        //    {
-        //        RightImage = e.BI;
-        //    }
-        //    else
-        //    {
-        //        LeftImage = e.BI;
-        //    }
-        //}
-    }
+    [RelayCommand]
     private void SetPrompts()
     {
         PromptsVisibility = PromptsVisibility switch
@@ -250,17 +214,13 @@ class MainViewModel
             Visibility.Visible => Visibility.Collapsed
         };
     }
-
-    private ICOM _comValves;
-    private Dictionary<Buttons, int> _valveAssignment;
-    private const string SETTINGS_FOLDER = "Settings";
-
+    [RelayCommand]
     private void Settings()
     {
         new SettingsView() { DataContext = new SettingsViewModel(_comValves, _valveAssignment) }.ShowDialog();
         CountDownTime = ProgSettings.Default.ExposureTime;
     }
-
+    [RelayCommand(CanExecute = nameof(StopExec))]
     private void PushTheButton(object parameter)
     {
         switch (parameter)

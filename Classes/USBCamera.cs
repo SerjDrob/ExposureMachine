@@ -183,7 +183,7 @@ namespace ExposureMachine.Classes
 
         public void SetSettings(CameraSettings settings)
         {
-            var isSet = _localCamera.SetCameraProperty(CameraControlProperty.Exposure, 20, CameraControlFlags.Auto);
+            //var isSet = _localCamera.SetCameraProperty(CameraControlProperty.Exposure, 20, CameraControlFlags.Auto);
         }
     }
 }

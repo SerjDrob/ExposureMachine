@@ -1,4 +1,5 @@
-﻿<Window x:Class="ExposureMachine.View.MainView"
+﻿<hc:GlowWindow x:Class="ExposureMachine.View.MainView"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,9 +11,12 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:converters="clr-namespace:ExposureMachine.View.Converters"
         mc:Ignorable="d"
-        Title="Установка совмещения" Height="450" Width="800"  WindowState="Maximized">
+        Title="Установка совмещения"
+        Height="450"
+        Width="800"
+        WindowState="Maximized">
     <Window.InputBindings>
-        <KeyBinding Command="{Binding PromptsCmd}" Key="P"/>        
+        <KeyBinding Command="{Binding SetPromptsCommand}" Key="P"/>        
     </Window.InputBindings>
     <Window.Resources>
         <System:String x:Key="LeftCam">LeftCam</System:String>
@@ -21,7 +25,7 @@
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCmd}" PassEventArgsToCommand="True"/>
+            <i:InvokeCommandAction Command="{Binding OnMainViewClosingCommand}" PassEventArgsToCommand="True"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
@@ -36,18 +40,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ToolBar Grid.ColumnSpan="3">
-            <Button Content="Настройки" Command="{Binding SettingsCmd}"/>
+            <Button Content="Настройки" Command="{Binding SettingsCommand}"/>
             <ToolBar.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
+                    <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCommand}" CommandParameter="{StaticResource LeftCam}"/>
                 </ContextMenu>
             </ToolBar.ContextMenu>
         </ToolBar>
-        <DockPanel Grid.Column="{Binding LeftCameraColumn, FallbackValue=0}" Grid.Row="1">
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
+        <DockPanel Grid.Column="0" Grid.Row="1">
+            <Button Command="{Binding MirrorCameraCommand}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
                 <Image Source="/View/Icons/clipart2208694.png"/>
             </Button>
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Left">
+            <Button Command="{Binding MirrorCameraCommand}" CommandParameter="{x:Static local:CameraTransforms.LeftCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Left">
                 <Image Source="/View/Icons/clipart2208694.png" RenderTransformOrigin="0.5 0.5">
                     <Image.RenderTransform>
                         <RotateTransform Angle="90"/>
@@ -59,7 +63,7 @@
                     <Image Source="{Binding LeftImage, Mode=OneWay}" RenderTransformOrigin="0.5 0.5">
                         <Image.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource LeftCam}"/>
+                                <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCommand}" CommandParameter="{StaticResource LeftCam}"/>
                             </ContextMenu>
                         </Image.ContextMenu>
                         <Image.RenderTransform>
@@ -77,11 +81,11 @@
                 </Grid>
             </Border>
         </DockPanel>
-        <DockPanel Grid.Column="{Binding RightCameraColumn, FallbackValue=2}" Grid.Row="1">
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
+        <DockPanel Grid.Column="2" Grid.Row="1">
+            <Button Command="{Binding MirrorCameraCommand}" CommandParameter="{x:Static local:CameraTransforms.RightCameraYMirror}" Width="22" Height="22" DockPanel.Dock="Top">
                 <Image Source="/View/Icons/clipart2208694.png"/>
             </Button>
-            <Button Command="{Binding MirrorCameraCmd}" CommandParameter="{x:Static local:CameraTransforms.RightCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Right">
+            <Button Command="{Binding MirrorCameraCommand}" CommandParameter="{x:Static local:CameraTransforms.RightCameraXMirror}" Width="22" Height="22" DockPanel.Dock="Right">
                 <Image Source="/View/Icons/clipart2208694.png" RenderTransformOrigin="0.5 0.5">
                     <Image.RenderTransform>
                         <RotateTransform Angle="90"/>
@@ -93,7 +97,7 @@
                     <Image Source="{Binding RightImage, Mode=OneWay}" RenderTransformOrigin="0.5 0.5">
                         <Image.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCmd}" CommandParameter="{StaticResource RightCam}"/>
+                                <MenuItem Header="Настройки изображения" Command="{Binding ShowVideoSettingsCommand}" CommandParameter="{StaticResource RightCam}"/>
                             </ContextMenu>
                         </Image.ContextMenu>
                         <Image.RenderTransform>
@@ -112,7 +116,7 @@
                 </Grid>
             </Border>
         </DockPanel>
-        <Button Command="{Binding ReplaceCamerasCmd}" Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1">
+        <Button Command="{Binding ReplaceCamerasCommand}" Grid.Column="1" Width="22" Height="22" VerticalAlignment="Center" Grid.Row="1">
             <Image Source="/View/Icons/18429427461560147112-24.png"/>
         </Button>
         <UniformGrid Grid.Row="2" Grid.ColumnSpan="3" Rows="2" Columns="5">
@@ -123,55 +127,55 @@
                     <Setter Property="VerticalContentAlignment"  Value="Stretch"/>
                 </Style>
             </UniformGrid.Resources>
-            <ToggleButton HorizontalContentAlignment="Stretch" Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" >
+            <ToggleButton HorizontalContentAlignment="Stretch" Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.AlignmentMask}" >
                 <Grid>
                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Юстировка ФШ</TextBlock>
                     <AccessText Text="_A" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>                
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingMask}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.FixingMask}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация ФШ</TextBlock>
                     <AccessText Text="_S" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingFrame}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.FixingFrame}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация рамки ФШ</TextBlock>
                     <AccessText Text="_D" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.FixingSubstrate}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация подложки</TextBlock>
                     <AccessText Text="_F" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.BallSupport}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.BallSupport}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Столик шаровая опора</TextBlock>
                     <AccessText Text="_Z" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.LiftingTable}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.LiftingTable}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Подъём столика</TextBlock>
                     <AccessText Text="_X" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.FixingTable}">                
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.FixingTable}">                
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Фиксация подъёма столика</TextBlock>
                     <AccessText Text="_C" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.Gap}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.Gap}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Зазор</TextBlock>
                     <AccessText Text="_V" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
                 </Grid>
             </ToggleButton>
-            <ToggleButton Command="{Binding PushCmd}" CommandParameter="{x:Static local:Buttons.Exposing}" IsChecked="{Binding IsExposing, Mode=TwoWay}">
+            <ToggleButton Command="{Binding PushTheButtonCommand}" CommandParameter="{x:Static local:Buttons.Exposing}" IsChecked="{Binding IsExposing, Mode=TwoWay}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Экспонирование</TextBlock>
                     <AccessText Text="_Q" Visibility="{Binding PromptsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="LawnGreen"/>
@@ -186,4 +190,4 @@
             </Grid>
         </UniformGrid>
     </Grid>
-</Window>
+</hc:GlowWindow>
